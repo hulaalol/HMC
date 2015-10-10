@@ -1,0 +1,23 @@
+name: HulaaMineCraft
+version: 1.0
+author: Hulaa
+main: me.hulaa.info.HulaaMineCraft
+commands:
+     hmcinfo:
+          description: Zeigt die Server-Info an.
+          usage: </command>
+     hmcspeed:
+          description: Erhoeht die Geschwindigkeit (Werte zwischen -1 und 1)
+          usage: </command> [value]
+     hmcrestore:
+          description: Fuellt Leben und Hunger wieder auf.
+          usage: </command>
+     hmcclearinv:
+          description: Leert das Inventar.
+          usage: </command>
+     hmcghast:
+          description: Ruft einen Ghast herbei.
+          usage: </command>
+     hmctowns:
+          description: Teleportiert in waehlbare Stadt
+          usage: </command> [value]
