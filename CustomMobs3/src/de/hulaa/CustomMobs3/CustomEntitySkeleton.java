@@ -16,16 +16,14 @@ import java.lang.Integer;
 	public class CustomEntitySkeleton extends EntitySkeleton {
 		
 
-		public double getLevel(){
-			return ((this.getAttributeInstance(GenericAttributes.maxHealth).getValue()-5D)/1.5D);
-		}
+	
 		
 
 		public CustomEntitySkeleton(World world) {
 		super(world);
 		
 		
-		Double level = this.getAttributeInstance(GenericAttributes.maxHealth).getValue()*0.4;
+		Double level = ((this.getAttributeInstance(GenericAttributes.maxHealth).getValue()-5D)/1.5D);
 		Integer intLevel = level.intValue();
 
 		
@@ -75,13 +73,13 @@ import java.lang.Integer;
 		protected void initAttributes() {
 			super.initAttributes();
 
-			double modifier = (double) AdditionalMobSpawner.spawnLevel();
+			int level = AdditionalMobSpawner.spawnLevel();
 
-			double attackDamage= (2D+(0.5D*modifier));
-			double maxHealth = (5D+(1.5D*modifier));
-			double mvmnt = (0.1D*(modifier/8)+0.1D);
-			double followRange = (150D+(modifier*3));
-			double KnockbackResist = 0.1D+(modifier/30);
+			double attackDamage= (2D+(0.5D*level));
+			double maxHealth = CustomEntitySkeletonAttributeSetter.setSkeletonHealth(level);
+			double mvmnt = (0.1D*(level/8)+0.1D);
+			double followRange = (150D+(level*3));
+			double KnockbackResist = 0.1D+(level/30);
 			
 
 
@@ -90,6 +88,10 @@ import java.lang.Integer;
 			this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(mvmnt);
 			this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(followRange);
 			this.getAttributeInstance(GenericAttributes.c).setValue(KnockbackResist);
+		}
+		
+		public double getLevel(){
+			return ((this.getAttributeInstance(GenericAttributes.maxHealth).getValue()-5D)/1.5D);
 		}
 	
 

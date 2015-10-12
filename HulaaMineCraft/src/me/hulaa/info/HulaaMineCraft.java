@@ -7,9 +7,12 @@ import java.util.Random;
 
 import java.util.Scanner;
 
+import net.minecraft.server.v1_8_R3.EntityLiving;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Horse;
@@ -93,7 +96,10 @@ public class HulaaMineCraft extends JavaPlugin{
 		}
 
 		if (cmd.getName().equalsIgnoreCase("hmcrestore")) {
-			player.setHealth(20);
+			
+			EntityLiving p = (EntityLiving) ((CraftEntity) player).getHandle();
+			
+			p.setHealth(p.getMaxHealth());
 			player.setFoodLevel(20);
 			player.sendMessage("§2[HMC] §3Du bist wieder gesund und satt!");
 			return true;
