@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class CustomMobs3 extends JavaPlugin implements Listener {
+	
 
 	public void onEnable() {
 
@@ -37,7 +38,7 @@ public class CustomMobs3 extends JavaPlugin implements Listener {
 		new BukkitRunnable() {
 			public void run() {
 
-				Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
+				Player [] players = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
 				boolean PlayersOnline = players.length > 0;
 
 				if (PlayersOnline) {

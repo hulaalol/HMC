@@ -51,8 +51,8 @@ import net.minecraft.server.v1_8_R3.World;
 
 			this.getAttributeInstance(GenericAttributes.maxHealth).setValue(15.0D);
 			this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(3.5D);
-			this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3D);
-			this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(1500D);
+			this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.2D);
+			this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(15D);
 			this.getAttributeInstance(GenericAttributes.c).setValue(1.0D); //Knockback?
 		}
 	

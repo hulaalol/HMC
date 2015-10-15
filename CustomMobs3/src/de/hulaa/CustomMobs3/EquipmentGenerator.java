@@ -65,7 +65,7 @@ public class EquipmentGenerator implements EquipmentDataBase {
 		
 		int roll = Utils.randInt(0, 100);
 		
-		if (moblevel <10 && roll>30)
+		if (moblevel <=10 && roll>30)
 		{
 			return 1;
 		}else if (moblevel>=11 && moblevel <20 && roll>10)
