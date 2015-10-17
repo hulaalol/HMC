@@ -29,6 +29,7 @@ public class HMCloot extends JavaPlugin implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent playerDied)
 	{
 		playerDied.getDrops().clear();
+
 	}
 	
 	@EventHandler
