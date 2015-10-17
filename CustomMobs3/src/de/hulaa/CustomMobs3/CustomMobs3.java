@@ -52,21 +52,21 @@ public class CustomMobs3 extends JavaPlugin implements Listener {
 						int spawnLevel = AdditionalMobSpawner.getSpawnLevel(PlayerLevel);
 
 
-						if (spawnLevel <= 2 && spawnLevel>0){
-
-							EntitySkeleton skelett = AdditionalMobSpawner.spawnSkeleton(world, spawnLevel);
-							skelett.setCustomName("CMob <"+spawnLevel+">");
-							AdditionalMobSpawner.spawnEntity(skelett, spawn);
-							Bukkit.getServer().broadcastMessage("[BETA] CustomSkeleton <"+spawnLevel+"> @"+Utils.announceLocation(spawn));
-
-
-						}else {
+//						if (spawnLevel <= 2 && spawnLevel>0){
+//
+//							EntitySkeleton skelett = AdditionalMobSpawner.spawnSkeleton(world, spawnLevel);
+//							skelett.setCustomName("CMob <"+spawnLevel+">");
+//							AdditionalMobSpawner.spawnEntity(skelett, spawn);
+//							Bukkit.getServer().broadcastMessage("[BETA] CustomSkeleton <"+spawnLevel+"> @"+Utils.announceLocation(spawn));
+//
+//
+//						}else {
 
 							EntityLiving skelett = new CustomEntitySkeleton(((CraftWorld) players[PlayerIndex].getWorld()).getHandle());
 							AdditionalMobSpawner.spawnEntity(skelett, spawn);
 							Bukkit.getServer().broadcastMessage("[BETA] "+ skelett.getCustomName()+" @"+Utils.announceLocation(spawn));
 
-						}
+						//}
 					}
 				}
 			}

@@ -10,13 +10,15 @@ import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.EntityTypes;
 import net.minecraft.server.v1_8_R3.BiomeBase.BiomeMeta;
+import net.minecraft.server.v1_8_R3.EntityZombie;
 
 
 	public enum CustomEntityType {
 		//Temporary, cause else it will throw some errors, you will see for yourself if u remove it :p
 		CUSTOMSKELETON("Skeleton",51,EntityType.SKELETON,EntitySkeleton.class,CustomEntitySkeleton.class),
-		CUSTOMSKELETON1("Skeleton1",51,EntityType.SKELETON,EntitySkeleton.class,CustomEntitySkeleton1.class),
-		CUSTOMSKELETON2("Skeleton2",51,EntityType.SKELETON,EntitySkeleton.class,CustomEntitySkeleton2.class);
+		CUSTOMZOMBIE("Zombie",54,EntityType.ZOMBIE,EntityZombie.class,CustomEntityZombie.class);
+		//CUSTOMSKELETON1("Skeleton1",51,EntityType.SKELETON,EntitySkeleton.class,CustomEntitySkeleton1.class),
+		//CUSTOMSKELETON2("Skeleton2",51,EntityType.SKELETON,EntitySkeleton.class,CustomEntitySkeleton2.class);
 		
 		
 		private String name;

@@ -68,7 +68,7 @@ public class EquipmentGenerator implements EquipmentDataBase {
 		if (moblevel <=10 && roll>30)
 		{
 			return 1;
-		}else if (moblevel>=11 && moblevel <20 && roll>10)
+		}else if (moblevel>=11 && /*moblevel <20 && */ roll>10)
 		{
 			return 1;
 		}else{
