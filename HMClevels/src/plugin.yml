@@ -1,0 +1,9 @@
+name: HMClevels
+version: 0.0
+author: Hulaa
+main: de.hulaa.HMClevels.HMClevels
+description: Player Level and Attribute design
+commands:
+     hmclevel:
+          description: Erhoeht das Level (Werte zwischen 1 und 50)
+          usage: </command> [value]
