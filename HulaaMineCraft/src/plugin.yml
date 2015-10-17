@@ -21,3 +21,6 @@ commands:
      hmctowns:
           description: Teleportiert in waehlbare Stadt
           usage: </command> [value]
+     hmchealth:
+          description: Setzt die Gesundheit des Spielers
+          usage: </command> [value]

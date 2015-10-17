@@ -3,26 +3,18 @@ package me.hulaa.info;
 
 import java.util.Random;
 
-
-
-import java.util.Scanner;
-
 import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
 
-import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Ghast;
-import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.*;
+
+
 
 
 public class HulaaMineCraft extends JavaPlugin{
@@ -91,9 +83,23 @@ public class HulaaMineCraft extends JavaPlugin{
 				player.sendMessage("§4[HMC] §4Du musst einen Wert zwischen 0 und 1 eingeben! Beispiel: /hmcspeed 0.5");
 				return true;
 			}
+			
+			
+		
 
 
 		}
+		
+		if (cmd.getName().equalsIgnoreCase("hmchealth")) {
+
+			double health = Double.parseDouble(args[0]);
+			EntityLiving p = (EntityLiving) ((CraftEntity) player).getHandle();
+			p.getAttributeInstance(GenericAttributes.maxHealth).setValue(health);
+			player.sendMessage("§4[HMC] §4Gesundheit auf: "+(p.getAttributeInstance(GenericAttributes.maxHealth).getValue())+" gesetzt");
+			return true;
+			}
+			
+			
 
 		if (cmd.getName().equalsIgnoreCase("hmcrestore")) {
 			
