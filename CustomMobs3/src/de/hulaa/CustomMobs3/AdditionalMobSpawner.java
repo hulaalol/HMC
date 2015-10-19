@@ -70,8 +70,8 @@ public class AdditionalMobSpawner extends JavaPlugin {
 
 	public static int getSpawnLevel(int playerLevel) {
 
-		int max = Utils.randInt(playerLevel+1, playerLevel + 7);
-		int min = Utils.randInt(playerLevel - 3, playerLevel);
+		int max = Utils.randInt(playerLevel+1, playerLevel + 2);
+		int min = Utils.randInt(playerLevel - 4, playerLevel);
 
 		if (min<1)
 		{

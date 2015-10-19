@@ -2,13 +2,17 @@ package de.hulaa.CustomMobs3;
 
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.World;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -19,7 +23,7 @@ public class CustomMobs3 extends JavaPlugin implements Listener {
 
 		System.out.println("[HCM] Hulaa Custom Mobs 1.0 loaded");
 		CustomEntityType.registerEntities();
-		spawnAdditionalMobs();
+		//spawnAdditionalMobs();
 		
 
 		// getServer().getPluginManager().registerEvents(this, this);
@@ -30,9 +34,50 @@ public class CustomMobs3 extends JavaPlugin implements Listener {
 	public void onDisable() {
 		CustomEntityType.unregisterEntities();
 		System.out.println("[HCM] Unregistering Entities....");
-		
+
 	}
 
+//	@EventHandler
+//	public void EntityLostHealthEvent(EntityDamageEvent event) {
+//
+//		EntityLiving mob = (EntityLiving) event.getEntity();
+//
+//		if (!(mob instanceof Player)) {
+//
+//			if (mob.getCustomName() != null) {
+//				
+//				
+//				double maxHealth = mob.getAttributeInstance(GenericAttributes.maxHealth).getValue();
+//
+//				int updateHealth = (int) Math.round(maxHealth-event.getDamage());
+//				
+//				
+//				String oldCustomName = mob.getCustomName();
+//				String[] oldCustomNameSplitted = oldCustomName.split(" "); // index 3
+//
+//				String newCustomName = "";
+//				for (int i = 0; i < oldCustomNameSplitted.length; i++) {
+//
+//					if (i == 3) {
+//						newCustomName += updateHealth + " ";
+//					} else {
+//						newCustomName += oldCustomNameSplitted[i] + " ";
+//					}
+//
+//				}
+//
+//				mob.setCustomName(newCustomName);
+//
+//			}
+//
+//		}
+//
+//	}
+
+	
+	
+	
+	
 	public void spawnAdditionalMobs() {
 
 		new BukkitRunnable() {

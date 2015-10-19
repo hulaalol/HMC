@@ -1,10 +1,16 @@
 package de.hulaa.CustomMobs3;
 
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
+
 import org.bukkit.inventory.ItemStack;
 
 
 
 public class EquipmentGenerator implements EquipmentDataBase {
+	
+	
 	
 	
 	public static ItemStack[] generateEquipment (int moblevel){
@@ -13,11 +19,17 @@ public class EquipmentGenerator implements EquipmentDataBase {
 
 			ItemStack[] equipment = new ItemStack[5];
 			
-		
-			int weaponIndex = Utils.randInt(0, EquipmentDataBase.WEAPONS.length-1);
-			equipment[0] = EquipmentDataBase.WEAPONS[weaponIndex];
-		
 			
+			//weapon
+
+				int weaponIndex = Utils.randInt(0, EquipmentDataBase.WEAPONS.length-1);
+				
+				if(GenericAttributesFunction.mobAd(moblevel)>EquipmentDataBase.WEAPON_DAMAGE[weaponIndex]){
+				equipment[0] = EquipmentDataBase.WEAPONS[weaponIndex];	
+				}
+				
+			
+
 			//boots
 			if (RollSlot(moblevel)==1)
 			{
@@ -65,15 +77,33 @@ public class EquipmentGenerator implements EquipmentDataBase {
 		
 		int roll = Utils.randInt(0, 100);
 		
-		if (moblevel <=10 && roll>30)
+		if (moblevel <=10 && roll>90)
 		{
 			return 1;
-		}else if (moblevel>=11 && /*moblevel <20 && */ roll>10)
+		}else if (moblevel>=11 && /*moblevel <20 && */ roll>70)
 		{
 			return 1;
 		}else{
 			return 0;
 		}
+	}
+	
+	public static void adjustAD(EntityLiving mob, ItemStack weapon){
+		
+		for(int i=0; i>EquipmentDataBase.WEAPONS.length; i++){
+			
+			if (weapon.equals(EquipmentDataBase.WEAPONS[i])){
+
+				double ad = mob.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
+
+				mob.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(ad-EquipmentDataBase.WEAPON_DAMAGE[i]);
+				
+				break;
+				
+			}
+			
+		}
+		
 	}
 	
 	

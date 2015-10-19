@@ -27,13 +27,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class HMClevels extends JavaPlugin implements Listener {
 	
+	private static double playerHealthModifier = 1.0D;
+	private static double playerADModifier = 1.0D;
+	
 	
 	@Override
 	public void onEnable() {
 		
 		Bukkit.getServer().getPluginManager().registerEvents(this,this);
 		
-		System.out.println("[HMC] HMClevels 0.0 erfolgreich geladen.");
+		System.out.println("[HMC] HMClevels 0.1 erfolgreich geladen.");
 
 
 	}
@@ -82,7 +85,9 @@ public class HMClevels extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin (PlayerJoinEvent event){
+		
 		Player player = event.getPlayer();
+		
 		player.setHealthScale(40D);
 		player.sendMessage("§2[HMC] §3Welcome back to Homohausen!");
 
@@ -102,19 +107,8 @@ public class HMClevels extends JavaPlugin implements Listener {
 
 			if (level >= 0 && level <= 50)
 			{
-				EntityLiving p = (EntityLiving) ((CraftEntity) player).getHandle();
 				player.setLevel(level);
-				
-				p.getAttributeInstance(GenericAttributes.maxHealth).setValue(AttributeSetter.setPlayerHealth(level));
-				p.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(AttributeSetter.setPlayerAD(level));
-				
-				
-				double health = p.getAttributeInstance(GenericAttributes.maxHealth).getValue();
-				double AD = p.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
-
-				player.setHealthScale(40D);
-				
-				player.sendMessage("§2[HMC] §3Level auf " + level + " gesetzt! HP= "+ health+ " AD= "+AD);
+				LevelUp(player,level);
 				return true;
 				
 			} else
@@ -131,27 +125,38 @@ public class HMClevels extends JavaPlugin implements Listener {
 	
 	public static void LevelUp(Player player, int level){
 		
+		player.setHealthScale(40D);
+		
 		EntityLiving p = (EntityLiving) ((CraftEntity) player).getHandle();
-		//player.setLevel(level);
 		
-		p.getAttributeInstance(GenericAttributes.maxHealth).setValue(AttributeSetter.setPlayerHealth(level));
-		p.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(AttributeSetter.setPlayerAD(level));
-		
-		
-		double health = p.getAttributeInstance(GenericAttributes.maxHealth).getValue();
-		double AD = p.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
+		double health = playerHealthModifier*AttributeSetter.setPlayerHealth(level);
+		double ad = playerADModifier*AttributeSetter.setPlayerAD(level);
 
-		
-		
-		player.sendMessage("§2[HMC] §3Level auf " + level + " gesetzt! HP= "+ health+ " AD= "+AD);
+		p.getAttributeInstance(GenericAttributes.maxHealth).setValue(health);
+		p.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(ad);
+
+
+		player.sendMessage("§2[HMC] §3Level auf " + level + " gesetzt! HP= "+health+ " AD= "+ad);
 		
 	}
 	
 	
+	public static double getPlayerHealth(Player player){
+		
+		EntityLiving p = (EntityLiving) ((CraftEntity) player).getHandle();
+		return p.getAttributeInstance(GenericAttributes.maxHealth).getValue();
+		
+	}
+	
+	public static double getPlayerAD(Player player){
+		EntityLiving p = (EntityLiving) ((CraftEntity) player).getHandle();
+		return p.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
+	}
+	
+
 	public static void setWeaponDamage(Player player, double modifier){
 		
 		EntityLiving p = (EntityLiving) ((CraftEntity) player).getHandle();
-		
 		double AD = p.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
 		
 		p.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(AD*modifier);
