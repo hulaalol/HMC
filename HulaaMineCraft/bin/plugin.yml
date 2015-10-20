@@ -1,26 +1,35 @@
-name: HulaaMineCraft
-version: 1.0
+name: HMCServerAdmin
+version: 1.1
 author: Hulaa
-main: me.hulaa.info.HulaaMineCraft
+main: me.hulaa.info.HMCAdmin
 commands:
-     hmcinfo:
-          description: Zeigt die Server-Info an.
+     info:
+          description: Show server info!
           usage: </command>
-     hmcspeed:
-          description: Erhoeht die Geschwindigkeit (Werte zwischen -1 und 1)
+     speed:
+          description: Set player walk and flyspeed (0.0 to 1.0)
           usage: </command> [value]
-     hmcrestore:
-          description: Fuellt Leben und Hunger wieder auf.
+     heal:
+          description: Heal the player to full health and hunger
           usage: </command>
-     hmcclearinv:
-          description: Leert das Inventar.
+     clearinv:
+          description: Clear the inventory
           usage: </command>
-     hmcghast:
-          description: Ruft einen Ghast herbei.
-          usage: </command>
-     hmctowns:
-          description: Teleportiert in waehlbare Stadt
+     town:
+          description: Teleport to town
           usage: </command> [value]
-     hmchealth:
-          description: Setzt die Gesundheit des Spielers
+     towninfo:
+          description: List available towns to teleport
+          usage: </command>
+     health:
+          description: Set player health (0 to 1.000.000)
           usage: </command> [value]
+     ad:
+          description: Set player attack damage (0 to 1.000.000)
+          usage: </command> [value]
+     c:
+          description: Set gamemode to creative
+          usage: </command>
+     s:
+          description: Set gamemode to survival
+          usage: </command>

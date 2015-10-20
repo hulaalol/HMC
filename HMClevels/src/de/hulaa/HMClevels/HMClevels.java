@@ -1,9 +1,5 @@
 package de.hulaa.HMClevels;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-
-import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 
@@ -12,12 +8,9 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -155,7 +148,6 @@ public class HMClevels extends JavaPlugin implements Listener {
 	
 
 	public static void setWeaponDamage(Player player, double modifier){
-		
 		EntityLiving p = (EntityLiving) ((CraftEntity) player).getHandle();
 		double AD = p.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
 		

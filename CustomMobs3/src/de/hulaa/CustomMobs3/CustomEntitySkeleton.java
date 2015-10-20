@@ -1,71 +1,68 @@
 package de.hulaa.CustomMobs3;
 
-import net.minecraft.server.v1_8_R3.DifficultyDamageScaler;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.World;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class CustomEntitySkeleton extends EntitySkeleton {
 
-	public int MobLevel=1;
-	public ItemStack[] equipment= new ItemStack[5];
-	public static double sharedHealthModifier=1.0D;
-	public static double sharedAdModifier = 1.0D;
-	private boolean isLevelScaled = false;
+	public static double sharedHealthModifier=1.0D;						// HP modifier
+	public static double sharedAdModifier = 1.0D;						// AD modifier
+	
+	public int MobLevel=1;												// standard MobLevel, is set to nearest Player from SpawnPoint
+	public ItemStack[] equipment= new ItemStack[5];						// equipment generated depending on level
+	
+	private static double [][] stats = new double[75][2]; 				// [level][columns] col0=hp col1=ad
+	private boolean isLevelScaled = false; 								// is set to true after level-scaling
+	
+	static{																//when class is loaded, initialize stats for 75 levels
+		
+		for(int i=1; i<stats.length; i++){	
+			stats[i][0]=GenericAttributesFunction.mobHealth(i);
+			stats[i][1]=GenericAttributesFunction.mobAd(i);
+			
+		}
+	}
 	
 	
 	public CustomEntitySkeleton(World world) {
 		super(world);
-		
-		
-
-		//int level = this.getLevel();
-		
-		//UNEQUIP BOW
-		
-		
-		// EQUIPMENT PROCESS
-				
-
-
-		
-		
-		//Bukkit.getServer().broadcastMessage("[BETA] Skeleton spawn Level:"+this.getLevel()+" HP:"+this.getAttributeInstance(GenericAttributes.maxHealth).getValue());
-		//Bukkit.getServer().broadcastMessage("[BETA] Skeleton spawn Level:"+this.getLevel()+" AD:"+this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue());
-	
 	}
 	
 	
 	
-	/* (non-Javadoc)
-	 * @see net.minecraft.server.v1_8_R3.Entity#move(double, double, double)
+	/* 
+	 * When mob is spawned and uses his move-Method the first time, he becomes level-scaled
+	 * When done, isLevelScaled is set to true, preventing to spam the level-scaling-process
 	 */
 	@Override
 	public void move(double d0, double d1, double d2) {
 		super.move(d0, d1, d2);
 		
 		if(!isLevelScaled){
-			
+		
+		//get spawnLocation
 		Location spawnLoc = new Location (this.world.getWorld(),this.locX, this.locY, this.locZ);
 		
+		//get Players Online
 		Player [] players = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
+		
+		
+		//search for closest Player to the SpawnLocation
 		Player closestPlayer=null;
 		double smallestDistance=0.0D;
-		
 		for(int i=0; i<players.length; i++){
-			
-		
+
 		double distance = players[i].getLocation().distanceSquared(spawnLoc);
 		
 		if(i==0){
@@ -74,33 +71,35 @@ public class CustomEntitySkeleton extends EntitySkeleton {
 		}else{
 			
 			if (distance<smallestDistance){
-				
 				smallestDistance = distance;
 				closestPlayer = players[i];
 			}
 		}
 		}
 		
-		
+
 		
 		if(closestPlayer==null){
+			//if no Player is found, spawn level 1 Mob
 			MobLevel = AdditionalMobSpawner.getSpawnLevel(MobLevel);
 		}else{
+			//else calculate MobLevel depending on closestPlayer level
 			MobLevel = AdditionalMobSpawner.getSpawnLevel(closestPlayer.getLevel());
 		}
-		
-		this.changeAttributes();
+
+		//scale the stats
+		this.scaleStats();
 	
+		//set the name tag
 		double health = this.getAttributeInstance(GenericAttributes.maxHealth).getValue();
 		double ad =this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
-		
 		this.setCustomName("Skeleton <" + MobLevel + "> "+String.format("HP:%.0f AD:%.0f", health, ad));
 		
-		
+		//generate the Equipment
 		equipment = EquipmentGenerator.generateEquipment(MobLevel);
-		
+		//unequip the NMS-spawn Weapon (for example Material.BOW from Skeleton)
 		this.setEquipment(0, null);
-
+		//equip the Mob
 		for (int i = 0; i < 5; i++) {
 
 			if (equipment[i] != null) {
@@ -109,58 +108,31 @@ public class CustomEntitySkeleton extends EntitySkeleton {
 			}
 		}
 		
+		//adjust Mob-AD depending on Weapon received
 		EquipmentGenerator.adjustAD(this, equipment[0]);
-		
-
-		//super.dropEquipment(true, 1);
 
 		isLevelScaled = true;
 		
-		
-		Bukkit.getServer().broadcastMessage("[BETA] CreatureSpawnEvent Skeleton<"+MobLevel+">@"+closestPlayer.getDisplayName()+" Loc:"+Utils.announceLocation(spawnLoc));
+		//announce Spawn
+		//Bukkit.getServer().broadcastMessage("[BETA] CreatureSpawnEvent Skeleton<"+MobLevel+">@"+closestPlayer.getDisplayName()+" Loc:"+Utils.announceLocation(spawnLoc));
 		}
 	}
-	
 
-//	@Override
-//	  protected void a(DifficultyDamageScaler difficultydamagescaler)
-//	  {
-//	    super.a(difficultydamagescaler);
-//	   this.setEquipment(0, null);
-//	   
-//	   net.minecraft.server.v1_8_R3.ItemStack weapon = CraftItemStack.asNMSCopy(equipment[0]);
-//	   this.setEquipment(0, weapon);
-//
-//	  }
-	
-	
-	
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-
-		this.getAttributeInstance(GenericAttributes.maxHealth).setValue(20.0D);
-		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(2.0D);
-		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.2D);
-		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(16.0D);
-		this.getAttributeInstance(GenericAttributes.c).setValue(0.5D);
-		
-		
 	}
 	
-	public void changeAttributes() {
-		
+	public void scaleStats() {
 		//scale
-		this.getAttributeInstance(GenericAttributes.maxHealth).setValue(sharedHealthModifier * GenericAttributesFunction.mobHealth(MobLevel));
+		this.getAttributeInstance(GenericAttributes.maxHealth).setValue(sharedHealthModifier*stats[MobLevel][0]);
 		//heal
-		this.setHealth((float) this.getAttributeInstance(GenericAttributes.maxHealth).getValue());
+		this.setHealth((float) (sharedHealthModifier*stats[MobLevel][0]));
 	
-		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(sharedAdModifier * GenericAttributesFunction.mobAd(MobLevel));
-		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.2D);
+		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(sharedAdModifier * stats[MobLevel][1]);
+		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.35D);
 		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(16.0D);
 		this.getAttributeInstance(GenericAttributes.c).setValue(0.5D);
-		
-		
 	}
 	
 
@@ -200,7 +172,7 @@ public class CustomEntitySkeleton extends EntitySkeleton {
 						Bukkit.getServer().broadcastMessage("[BETA] Skeleton xp orb ("+orbQuantity +") distribution");
 						
 						Entity orb = new CustomEntityExperienceOrb(this.world, this.MobLevel, playerLevel);
-						AdditionalMobSpawner.spawnEntity(orb, CustomEntityExperienceOrb.orbLoc(loc,3));
+						AdditionalMobSpawner.spawnEntity(orb, CustomEntityExperienceOrb.orbLoc(loc,2));
 						
 					}
 					
@@ -210,26 +182,24 @@ public class CustomEntitySkeleton extends EntitySkeleton {
 			}
 
 			this.die();
+			
+			
+		      for (i = 0; i < 20; i++)
+		      {
+		        double d0 = this.random.nextGaussian() * 0.02D;
+		        double d1 = this.random.nextGaussian() * 0.02D;
+		        double d2 = this.random.nextGaussian() * 0.02D;
+		        
+		        this.world.addParticle(EnumParticle.EXPLOSION_NORMAL, this.locX + this.random.nextFloat() * this.width * 2.0F - this.width, this.locY + this.random.nextFloat() * this.length, this.locZ + this.random.nextFloat() * this.width * 2.0F - this.width, d0, d1, d2, new int[0]);
+		      }
 
-			// for (i = 0; i < 20; ++i) {
-			// double d0 = this.random.nextGaussian() * 0.02D;
-			// double d1 = this.random.nextGaussian() * 0.02D;
-			// double d2 = this.random.nextGaussian() * 0.02D;
-			//
-			// this.world.addParticle("explode", this.locX + (double)
-			// (this.random.nextFloat() * this.width * 2.0F) - (double)
-			// this.width, this.locY + (double) (this.random.nextFloat() *
-			// this.length), this.locZ + (double) (this.random.nextFloat() *
-			// this.width * 2.0F) - (double) this.width, d0, d1, d2);
-			// }
 		}
 
 	}
 	
 	
 	public int getLevel() {
-		Double level = ((this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).getValue()) - 16.0D);
-		return level.intValue();
+		return MobLevel;
 	}
 
 

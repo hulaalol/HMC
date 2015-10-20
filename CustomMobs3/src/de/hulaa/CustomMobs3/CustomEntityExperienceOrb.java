@@ -90,35 +90,42 @@ public class CustomEntityExperienceOrb extends EntityExperienceOrb{
 		case -10:
 		case -9:
 		case -8:
-		return 3;
+		return 12;
 		
 		case -7:
-		return 2;
+		return 10;
 		
 				
 		case -6:
 		if (dice > 0.2D){
-			return 2;
+			return 9;
 		}else{
-			return 1;
+			return 8;
 		}
 			
 		case -5:
 		if(dice > 0.5D){
-			return 2;
+			return 8;
 		}else{
-			return 1;
+			return 7;
 		}
 		
 		case -4:
 		if(dice > 0.7D){
-			return 2;
+			return 7;
 		}else{
-			return 1;
+			return 6;
+		}
+		
+		case -3:
+		if(dice> 0.8D){
+			return 6;
+		}else{
+			return 5;
 		}
 		
 		default:
-		return 1;
+		return 5;
 		
 		}
 		
@@ -162,13 +169,13 @@ public class CustomEntityExperienceOrb extends EntityExperienceOrb{
 			
 			switch(difference){
 			case 4:
-			return (fvalueXP*0.1F);
+			return (fvalueXP*0.4F);
 			case 3:
-			return (fvalueXP*0.25F);
+			return (fvalueXP*0.6F);
 			case 2:
-			return (fvalueXP*0.5F);
+			return (fvalueXP*0.8F);
 			case 1:
-			return (fvalueXP*0.75F);
+			return (fvalueXP*0.9F);
 			default:
 			return 0.0F;
 			}
@@ -192,7 +199,7 @@ public class CustomEntityExperienceOrb extends EntityExperienceOrb{
 		
 		loc.setX(locXZ[0]);
 		loc.setZ(locXZ[1]);
-		loc.setY(loc.getY()+1.8D);
+		loc.setY(loc.getY()+(Math.random()*2));
 
 		return loc;
 	}
