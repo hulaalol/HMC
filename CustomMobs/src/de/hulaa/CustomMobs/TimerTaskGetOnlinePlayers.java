@@ -21,7 +21,7 @@ public class TimerTaskGetOnlinePlayers extends TimerTask {
 	.forEach(p -> players.add(p));	
 	
 	
-	Bukkit.getServer().broadcastMessage("[BETA] Updated Playerlist: "+players.size());
+	Bukkit.getServer().broadcastMessage("[BETA] Updated Playerlist : "+players.size());
 	}
 
 	public TimerTaskGetOnlinePlayers() {
