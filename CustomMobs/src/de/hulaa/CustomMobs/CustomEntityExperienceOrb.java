@@ -1,4 +1,4 @@
-package de.hulaa.CustomMobs3;
+package de.hulaa.CustomMobs;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -21,12 +21,6 @@ public class CustomEntityExperienceOrb extends EntityExperienceOrb{
 			XPvalue[level]= Math.pow(Math.E, ((-0.061D)*level))*0.0106D;
 		}
 	}
-	
-	
-	
-	
-	
-	
 	
 
 	public CustomEntityExperienceOrb(World world) {

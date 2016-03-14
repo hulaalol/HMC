@@ -1,4 +1,4 @@
-package de.hulaa.CustomMobs3;
+package de.hulaa.CustomMobs;
 
 import net.minecraft.server.v1_9_R1.Entity;
 import net.minecraft.server.v1_9_R1.EntityExperienceOrb;

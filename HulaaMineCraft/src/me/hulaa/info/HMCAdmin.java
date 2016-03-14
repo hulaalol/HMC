@@ -1,15 +1,14 @@
 package me.hulaa.info;
 
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
+import net.minecraft.server.v1_9_R1.EntityLiving;
+import net.minecraft.server.v1_9_R1.GenericAttributes;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -98,9 +97,11 @@ public class HMCAdmin extends JavaPlugin{
 			
 			EntityLiving p = (EntityLiving) ((CraftEntity) player).getHandle();
 			
-			p.setHealth(p.getMaxHealth());
+			float oldHP = p.getHealth();
+			
+			p.setHealth((float) p.getAttributeInstance(GenericAttributes.maxHealth).getValue());
 			player.setFoodLevel(20);
-			player.sendMessage("§2[HMC] §3Health restored!");
+			player.sendMessage("§2[HMC] §3"+(p.getHealth()-oldHP)+" Health restored!");
 			return true;
 		}
 

@@ -1,4 +1,4 @@
-package de.hulaa.CustomMobs3;
+package de.hulaa.CustomMobs;
 
 import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;

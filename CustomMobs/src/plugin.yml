@@ -1,7 +1,7 @@
-name: CustomMobs3
+name: CustomMobs
 version: 1.0
 author: Hulaa
-main: de.hulaa.CustomMobs3.CustomMobs3
+main: de.hulaa.CustomMobs.CustomMobsMain
 description: Customized mobs and let them spawn
 commands:
      cspawn:

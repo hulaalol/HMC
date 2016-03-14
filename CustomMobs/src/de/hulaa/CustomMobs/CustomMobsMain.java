@@ -1,4 +1,4 @@
-package de.hulaa.CustomMobs3;
+package de.hulaa.CustomMobs;
 
 import net.minecraft.server.v1_9_R1.EntityLiving;
 import net.minecraft.server.v1_9_R1.EntitySkeleton;
@@ -22,7 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 
 
-public class CustomMobs3 extends JavaPlugin implements Listener {
+public class CustomMobsMain extends JavaPlugin implements Listener {
 	
 
 	public void onEnable() {

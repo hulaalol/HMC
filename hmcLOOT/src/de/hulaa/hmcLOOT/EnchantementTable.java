@@ -1,8 +1,7 @@
 package de.hulaa.hmcLOOT;
 
-import net.minecraft.server.v1_8_R3.Enchantment;
-import net.minecraft.server.v1_8_R3.EnchantmentProtection;
-import net.minecraft.server.v1_8_R3.MinecraftKey;
+import net.minecraft.server.v1_9_R1.Enchantment;
+
 
 public interface EnchantementTable {
 	

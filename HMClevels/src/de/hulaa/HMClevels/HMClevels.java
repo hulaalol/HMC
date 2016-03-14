@@ -1,13 +1,13 @@
 package de.hulaa.HMClevels;
 
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
+import net.minecraft.server.v1_9_R1.EntityLiving;
+import net.minecraft.server.v1_9_R1.GenericAttributes;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -81,6 +81,7 @@ public class HMClevels extends JavaPlugin implements Listener {
 		
 		Player player = event.getPlayer();
 		
+		player.setHealthScaled(true);
 		player.setHealthScale(40D);
 		player.sendMessage("§2[HMC] §3Welcome back to Homohausen!");
 

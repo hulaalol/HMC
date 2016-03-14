@@ -1,4 +1,4 @@
-package de.hulaa.CustomMobs3;
+package de.hulaa.CustomMobs;
 
 
 

@@ -1,4 +1,6 @@
-package de.hulaa.CustomMobs3;
+package de.hulaa.CustomMobs;
+
+import de.hulaa.CustomMobs.GenericAttributesFunction;
 
 public abstract class GenericAttributesFunction {
 	

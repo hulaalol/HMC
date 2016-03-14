@@ -1,45 +1,38 @@
 package de.hulaa.CustomMobs3;
 
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R1.Entity;
+import net.minecraft.server.v1_9_R1.EntityExperienceOrb;
+import net.minecraft.server.v1_9_R1.EntityPlayer;
+import net.minecraft.server.v1_9_R1.EntitySkeleton;
+import net.minecraft.server.v1_9_R1.EnumItemSlot;
+import net.minecraft.server.v1_9_R1.EnumParticle;
+import net.minecraft.server.v1_9_R1.GenericAttributes;
+import net.minecraft.server.v1_9_R1.World;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class CustomEntitySkeleton extends EntitySkeleton {
 
-	public static double sharedHealthModifier=1.0D;						// HP modifier
-	public static double sharedAdModifier = 1.0D;						// AD modifier
+	public static double healthModifier=1.0D;					// HP modifier
+	public static double adModifier = 1.0D;						// AD modifier
+	public static double XPModifier = 1.0D; //implement this!
 	
 	public int MobLevel=1;												// standard MobLevel, is set to nearest Player from SpawnPoint
-	public ItemStack[] equipment= new ItemStack[5];						// equipment generated depending on level
+	public ItemStack[] equipment= new ItemStack[6];						// equipment generated depending on level
 	
-	private static double [][] stats = new double[75][2]; 				// [level][columns] col0=hp col1=ad
 	private boolean isLevelScaled = false; 								// is set to true after level-scaling
-	
-	static{																//when class is loaded, initialize stats for 75 levels
-		
-		for(int i=1; i<stats.length; i++){	
-			stats[i][0]=GenericAttributesFunction.mobHealth(i);
-			stats[i][1]=GenericAttributesFunction.mobAd(i);
-			
-		}
-	}
-	
-	
+
 	public CustomEntitySkeleton(World world) {
 		super(world);
 	}
-	
-	
 	
 	/* 
 	 * When mob is spawned and uses his move-Method the first time, he becomes level-scaled
@@ -50,42 +43,48 @@ public class CustomEntitySkeleton extends EntitySkeleton {
 		super.move(d0, d1, d2);
 		
 		if(!isLevelScaled){
-		
-		//get spawnLocation
-		Location spawnLoc = new Location (this.world.getWorld(),this.locX, this.locY, this.locZ);
-		
-		//get Players Online
-		Player [] players = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
-		
-		
-		//search for closest Player to the SpawnLocation
-		Player closestPlayer=null;
-		double smallestDistance=0.0D;
-		for(int i=0; i<players.length; i++){
-
-		double distance = players[i].getLocation().distanceSquared(spawnLoc);
-		
-		if(i==0){
-		smallestDistance = distance;
-		closestPlayer = players[0];
-		}else{
 			
-			if (distance<smallestDistance){
-				smallestDistance = distance;
-				closestPlayer = players[i];
-			}
-		}
-		}
-		
+			org.bukkit.World BukkitWorld = this.getWorld().getWorld();
+			
+			if(BukkitWorld.getEnvironment().equals(org.bukkit.World.Environment.NORMAL)){
+				
+				//get spawnLocation
+				Location spawnLoc = new Location (this.world.getWorld(),this.locX, this.locY, this.locZ);
+				
+				//get Players Online
+				Player [] players = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
+				List<Player> playersList = new ArrayList<Player>(Arrays.asList(players)); 
+				List<Player> filteredList = new ArrayList<Player>(); 
+				
+				//search for closest Player to the SpawnLocation
+				Player closestPlayer=null;
+				double smallestDistance= Double.MAX_VALUE;
+				double distance = 0.0D;
+				closestPlayer = players[0];
+				
+				//measure only to players that are in NORMAL World
+				playersList.stream()
+				.filter(p -> p.getWorld().getEnvironment().equals(org.bukkit.World.Environment.NORMAL))
+				.forEach(p -> {filteredList.add(p);});
+					
+				for(Player p : filteredList){
+					distance = p.getLocation().distanceSquared(spawnLoc);
+					
+					if(distance<smallestDistance){
+						smallestDistance = distance;
+						closestPlayer = p;
+					}
 
-		
-		if(closestPlayer==null){
-			//if no Player is found, spawn level 1 Mob
-			MobLevel = AdditionalMobSpawner.getSpawnLevel(MobLevel);
-		}else{
-			//else calculate MobLevel depending on closestPlayer level
-			MobLevel = AdditionalMobSpawner.getSpawnLevel(closestPlayer.getLevel());
-		}
+
+			if(closestPlayer==null){
+				//if no Player is found, spawn level 1 Mob
+				MobLevel = AdditionalMobSpawner.getSpawnLevel(MobLevel);
+			}else{
+				//else calculate MobLevel depending on closestPlayer level
+				MobLevel = AdditionalMobSpawner.getSpawnLevel(closestPlayer.getLevel());
+			}
+				
+			}
 
 		//scale the stats
 		this.scaleStats();
@@ -97,25 +96,15 @@ public class CustomEntitySkeleton extends EntitySkeleton {
 		
 		//generate the Equipment
 		equipment = EquipmentGenerator.generateEquipment(MobLevel);
-		//unequip the NMS-spawn Weapon (for example Material.BOW from Skeleton)
-		this.setEquipment(0, null);
 		//equip the Mob
-		for (int i = 0; i < 5; i++) {
-
-			if (equipment[i] != null) {
-				net.minecraft.server.v1_8_R3.ItemStack equip = CraftItemStack.asNMSCopy(equipment[i]);
-				this.setEquipment(i, equip);
-			}
-		}
-		
+		EquipmentGenerator.equipMob(this, equipment);
 		//adjust Mob-AD depending on Weapon received
 		EquipmentGenerator.adjustAD(this, equipment[0]);
 
-		isLevelScaled = true;
-		
 		//announce Spawn
+		isLevelScaled = true;
 		//Bukkit.getServer().broadcastMessage("[BETA] CreatureSpawnEvent Skeleton<"+MobLevel+">@"+closestPlayer.getDisplayName()+" Loc:"+Utils.announceLocation(spawnLoc));
-		}
+		}}
 	}
 
 	@Override
@@ -125,11 +114,11 @@ public class CustomEntitySkeleton extends EntitySkeleton {
 	
 	public void scaleStats() {
 		//scale
-		this.getAttributeInstance(GenericAttributes.maxHealth).setValue(sharedHealthModifier*stats[MobLevel][0]);
+		this.getAttributeInstance(GenericAttributes.maxHealth).setValue(healthModifier*GenericAttributesFunction.healthPoints[MobLevel]);
 		//heal
-		this.setHealth((float) (sharedHealthModifier*stats[MobLevel][0]));
+		this.setHealth((float) (healthModifier*GenericAttributesFunction.healthPoints[MobLevel]));
 	
-		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(sharedAdModifier * stats[MobLevel][1]);
+		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(adModifier * GenericAttributesFunction.attackDamage[MobLevel]);
 		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.35D);
 		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(16.0D);
 		this.getAttributeInstance(GenericAttributes.c).setValue(0.5D);
@@ -138,7 +127,7 @@ public class CustomEntitySkeleton extends EntitySkeleton {
 
 
 	@Override
-	protected void aZ() {
+	protected void bC() { //was aZ in 1.8
 
 		++this.deathTicks;
 		if (this.deathTicks == 20) {
@@ -146,7 +135,7 @@ public class CustomEntitySkeleton extends EntitySkeleton {
 
 			if (!this.world.isClientSide
 					&& (this.lastDamageByPlayerTime > 0 || this
-							.alwaysGivesExp()) && this.ba()
+							.alwaysGivesExp()) && this.bd() //was this.ba in 1.8
 					&& this.world.getGameRules().getBoolean("doMobLoot")) {
 				i = this.getExpValue(this.killer);
 

@@ -2,11 +2,14 @@ package de.hulaa.CustomMobs3;
 
 import net.minecraft.server.v1_9_R1.Entity;
 import net.minecraft.server.v1_9_R1.EntityExperienceOrb;
+import net.minecraft.server.v1_9_R1.EntityHorse;
 import net.minecraft.server.v1_9_R1.EntityPlayer;
 import net.minecraft.server.v1_9_R1.EntityZombie;
+import net.minecraft.server.v1_9_R1.EnumHorseType;
 import net.minecraft.server.v1_9_R1.EnumItemSlot;
 import net.minecraft.server.v1_9_R1.EnumParticle;
 import net.minecraft.server.v1_9_R1.GenericAttributes;
+import net.minecraft.server.v1_9_R1.PacketPlayOutMount;
 import net.minecraft.server.v1_9_R1.World;
 
 import java.util.ArrayList;
@@ -15,11 +18,15 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.ItemStack;
 
-public class CustomEntityZombie extends EntityZombie {
+public class NextanGuard extends EntityZombie {
 
 	public static double healthModifier=1.0D;					// HP modifier
 	public static double adModifier = 1.0D;						// AD modifier
@@ -27,16 +34,22 @@ public class CustomEntityZombie extends EntityZombie {
 	
 	public int MobLevel=1;												// standard MobLevel, is set to nearest Player from SpawnPoint
 	public ItemStack[] equipment= new ItemStack[6];						// equipment generated depending on level
+	boolean isLevelScaled = false; 								// is set to true after level-scaling
+	boolean isMounted = false;
 	
-	private boolean isLevelScaled = false; 								// is set to true after level-scaling
+	public EntityHorse mount;
 	
-	
-	public CustomEntityZombie(World world) {
+	public NextanGuard(World world) {
 		super(world);
+	}
+	
+	public NextanGuard(World world, Integer level){
+		super(world);
+		this.MobLevel = level.intValue();
 	}
 
 	/* 
-	 * When mob is spawned and uses his move-Method the first time, he becomes level-scaled
+	 * When this is spawned and uses his move-Method the first time, he becomes level-scaled
 	 * When done, isLevelScaled is set to true, preventing to spam the level-scaling-process
 	 */
 	@Override
@@ -44,82 +57,79 @@ public class CustomEntityZombie extends EntityZombie {
 		super.move(d0, d1, d2);
 		
 		if(!isLevelScaled){
-			
-			org.bukkit.World BukkitWorld = this.getWorld().getWorld();
-			
-			if(BukkitWorld.getEnvironment().equals(org.bukkit.World.Environment.NORMAL)){
-				
-				//get spawnLocation
-				Location spawnLoc = new Location (this.world.getWorld(),this.locX, this.locY, this.locZ);
-				
-				//get Players Online
-				Player [] players = Bukkit.getOnlinePlayers().toArray(new Player[Bukkit.getOnlinePlayers().size()]);
-				List<Player> playersList = new ArrayList<Player>(Arrays.asList(players)); 
-				List<Player> filteredList = new ArrayList<Player>(); 
-				
-				//search for closest Player to the SpawnLocation
-				Player closestPlayer=null;
-				double smallestDistance= Double.MAX_VALUE;
-				double distance = 0.0D;
-				closestPlayer = players[0];
-				
-				//measure only to players that are in NORMAL World
-				playersList.stream()
-				.filter(p -> p.getWorld().getEnvironment().equals(org.bukkit.World.Environment.NORMAL))
-				.forEach(p -> {filteredList.add(p);});
-					
-				for(Player p : filteredList){
-					distance = p.getLocation().distanceSquared(spawnLoc);
-					
-					if(distance<smallestDistance){
-						smallestDistance = distance;
-						closestPlayer = p;
-					}
-
-
-			if(closestPlayer==null){
-				//if no Player is found, spawn level 1 Mob
-				MobLevel = AdditionalMobSpawner.getSpawnLevel(MobLevel);
-			}else{
-				//else calculate MobLevel depending on closestPlayer level
-				MobLevel = AdditionalMobSpawner.getSpawnLevel(closestPlayer.getLevel());
-			}
-				
-			}
-		
-			
-
-		//scale the stats
-		this.scaleStats();
-	
-		//set the name tag
-		double health = this.getAttributeInstance(GenericAttributes.maxHealth).getValue();
-		double ad =this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
-		this.setCustomName("Zombie <" + MobLevel + "> "+String.format("HP:%.0f AD:%.0f", health, ad));
-		
-		//generate the Equipment
-		equipment = EquipmentGenerator.generateEquipment(MobLevel);
-		//equip the Mob
-		EquipmentGenerator.equipMob(this, equipment);
-		//adjust Mob-AD depending on Weapon received
-		EquipmentGenerator.adjustAD(this, equipment[0]);
-		
-		//announce Spawn
 		isLevelScaled = true;
-		//Bukkit.getServer().broadcastMessage("[BETA] CreatureSpawnEvent Zombie<"+MobLevel+">@"+closestPlayer.getDisplayName()+" Loc:"+Utils.announceLocation(spawnLoc));
-		}}
-	}
+		this.persistent=true;
+		
+		ArrayList<Player> playerList = TimerTaskGetOnlinePlayers.players;
+		
+		if(TimerTaskGetOnlinePlayers.players.size()>0){
+	
+			Location spawnLoc = new Location(this.getWorld().getWorld(),this.locX,this.locY,this.locZ);
+			Player closestPlayer=null;
+			double smallestDistance= Double.MAX_VALUE;
+			double distance = 0.0D;
+			closestPlayer = playerList.get(0);
+			
+			for(Player p : playerList){
+				distance = p.getLocation().distanceSquared(spawnLoc);
+				
+				if(distance<smallestDistance){
+					smallestDistance = distance;
+					closestPlayer = p;
+			}
+			}
+			
+			MobLevel = AdditionalMobSpawner.getSpawnLevel(closestPlayer.getLevel());
 
+			//filter other Zombie Types
+			this.setBaby(false);
+			if(this.isVillager()){
+				this.die();
+			}else{
+				//scale the stats
+				this.scaleStats();
+
+				//set the name tag
+				double health = this.getAttributeInstance(GenericAttributes.maxHealth).getValue();
+				double ad =this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
+				this.setCustomName("Nextan Guard <" + this.MobLevel + "> "+String.format("HP:%.0f AD:%.0f", health, ad));
+		
+				//generate the Equipment
+				this.equipment[0] = EquipmentDataBase.WEAPONS[17];
+				
+				//20% Chance to Dual-Wield - else --> Shield
+				if(Math.random()>0.8){
+					this.equipment[5] = 	EquipmentDataBase.WEAPONS[17];
+				}else{
+					this.equipment[5] = EquipmentDataBase.OFFHAND[0];
+				}
+				//all Gold-Armor
+				this.equipment[1]=EquipmentDataBase.BOOTS[3];
+				this.equipment[2]=EquipmentDataBase.LEGGINGS[3];
+				this.equipment[3]=EquipmentDataBase.CHESTPLATE[3];
+				this.equipment[4]=EquipmentDataBase.HELMET[3];
+
+				//equip the Mob
+				EquipmentGenerator.equipMob(this, this.equipment);		
+				//adjust Mob-AD depending on Weapon received
+				EquipmentGenerator.adjustAD(this, this.equipment[0]);
+				
+			}	
+		}
+		}
+		
+		
+	}
+	
 	public void scaleStats() {
 		//scale
-		this.getAttributeInstance(GenericAttributes.maxHealth).setValue(healthModifier*GenericAttributesFunction.healthPoints[MobLevel]);
+		this.getAttributeInstance(GenericAttributes.maxHealth).setValue(healthModifier * GenericAttributesFunction.healthPoints[MobLevel]);
 		//heal
 		this.setHealth((float) (GenericAttributesFunction.healthPoints[MobLevel]));
 	
-		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(adModifier*GenericAttributesFunction.attackDamage[MobLevel]);
-		
-		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3D);
-		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(32.0D);
+		this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).setValue(GenericAttributesFunction.attackDamage[MobLevel]);
+		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.35D);
+		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(16.0D);
 		this.getAttributeInstance(GenericAttributes.c).setValue(0.5D); //Knockback-Resistance?
 	}
 	
@@ -138,10 +148,12 @@ public class CustomEntityZombie extends EntityZombie {
 					&& this.world.getGameRules().getBoolean("doMobLoot")) {
 				i = this.getExpValue(this.killer);
 
-				//while loop not needed?
 				while (i > 0) {
 					int j = EntityExperienceOrb.getOrbValue(i);
+
 					i -= j;
+					// this.world.addEntity(new EntityExperienceOrb(this.world,
+					// this.locX, this.locY, this.locZ, j));
 				}
 
 				World world = this.getWorld();
@@ -161,7 +173,10 @@ public class CustomEntityZombie extends EntityZombie {
 						AdditionalMobSpawner.spawnEntity(orb, CustomEntityExperienceOrb.orbLoc(loc,2));
 						
 					}
-				}	
+					
+				}
+				
+
 			}
 
 			this.die();
@@ -177,8 +192,7 @@ public class CustomEntityZombie extends EntityZombie {
 		}
 
 	}
-	
-	
+
 	public int getLevel() {
 		return MobLevel;
 	}
